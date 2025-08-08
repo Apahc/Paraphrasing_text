@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Конфигурация OpenAI
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = ""
 
 class TextProcessor:
     def __init__(self, api_key: str):
