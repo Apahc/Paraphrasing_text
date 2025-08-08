@@ -257,8 +257,8 @@ class TextProcessor:
 def main():
     """Основная функция для обработки текста из файла или аргументов командной строки."""
     parser = argparse.ArgumentParser(description="Обработка текста: перефразирование с использованием API OpenAI.")
-    parser.add_argument("--input-file", type=str, default="input/Кости_глава_1.pdf",
-                        help="Путь к входному файлу (.pdf, .txt, .md, .docx) (по умолчанию: input/Кости_глава_1.pdf)")
+    parser.add_argument("--input-file", type=str, default=None,
+                        help="Путь к входному файлу (.pdf, .txt, .md, .docx) (по умолчанию: запрашивается у пользователя)")
     parser.add_argument("--output-file", type=str, default="output/paraphrased.txt",
                         help="Путь к выходному файлу .txt (по умолчанию: output/paraphrased.txt)")
     parser.add_argument("--theme", type=str, default=None,
@@ -268,6 +268,12 @@ def main():
     args = parser.parse_args()
 
     try:
+        # Запрашиваем путь к входному файлу, если не указан в аргументах
+        input_file = args.input_file if args.input_file else input("Введите путь к входному файлу (.pdf, .txt, .md, .docx): ").strip()
+        if not input_file:
+            input_file = "input/Кости_глава_1.pdf"
+            logger.info(f"Путь к входному файлу не указан, используется значение по умолчанию: {input_file}")
+
         # Запрашиваем тему, если не указана в аргументах
         theme = args.theme if args.theme else input("Введите тематику текста: ").strip()
         if not theme:
@@ -281,8 +287,15 @@ def main():
             logger.info("API-ключ не указан, используется значение по умолчанию")
 
         processor = TextProcessor(api_key=api_key)
-        success, message = processor.process(args.input_file, args.output_file, theme)
+        success, message = processor.process(input_file, args.output_file, theme)
         logger.info(message)
+
+        # Выводим информацию о сохранённых файлах
+        if success:
+            print(f"Итоговые файлы сохранены:\n- Извлечённый текст: output/original.txt\n- Перефразированный текст: {args.output_file}")
+        else:
+            print("Обработка завершилась с ошибкой. Проверьте логи для подробностей.")
+
     except Exception as e:
         logger.error(f"Ошибка в main: {str(e)}")
         logger.info("Рекомендации по устранению ошибки:")
@@ -290,6 +303,7 @@ def main():
         logger.info("2. Проверьте наличие интернет-соединения.")
         logger.info("3. Убедитесь, что у вас достаточно квоты для API OpenAI.")
         logger.info("4. Проверьте, что установлены все библиотеки: `pip install -r requirements.txt`")
+        print("Обработка завершилась с ошибкой. Проверьте логи для подробностей.")
 
 if __name__ == "__main__":
     main()
