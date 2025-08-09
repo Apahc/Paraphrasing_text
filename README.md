@@ -29,8 +29,7 @@
    ```bash
    git clone https://github.com/<ваш-username>/text-processor.git
    cd text-processor
-```
-```
+   ```
 
 2. **Создайте виртуальное окружение** (рекомендуется):
 
